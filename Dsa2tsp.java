@@ -29,7 +29,6 @@ public class Dsa2tsp {
         }
     }
 
-    // Generate random cities
     public static City[] generateCities(int n) {
         City[] cities = new City[n];
         Random rand = new Random();
@@ -39,7 +38,6 @@ public class Dsa2tsp {
         return cities;
     }
 
-     
     public static void printCitiesAndDistances(City[] cities) {
         System.out.println("List of Cities (index: x, y):");
         for (int i = 0; i < cities.length; i++) {
@@ -57,10 +55,11 @@ public class Dsa2tsp {
         System.out.println();
     }
 
-    // Brute-force TSP (only works for small n, e.g., n ≤ 10)
     public static List<Integer> tspBruteForce(City[] cities) {
         List<Integer> cityIndices = new ArrayList<>();
-        for (int i = 0; i < cities.length; i++) cityIndices.add(i);
+        for (int i = 0; i < cities.length; i++) {
+            cityIndices.add(i);
+        }
 
         double minDistance = Double.MAX_VALUE;
         List<Integer> bestTour = new ArrayList<>();
@@ -73,12 +72,10 @@ public class Dsa2tsp {
             }
         }
 
-        bestTour.add(bestTour.get(0)); // return to start
-        System.out.println("Brute-force Total Distance: " + minDistance);
+        bestTour.add(bestTour.get(0));
         return bestTour;
     }
 
-    // Nearest Neighbor Heuristic
     public static List<Integer> tspNearestNeighbor(City[] cities) {
         int n = cities.length;
         boolean[] visited = new boolean[n];
@@ -106,12 +103,10 @@ public class Dsa2tsp {
             current = next;
         }
 
-        tour.add(tour.get(0)); // return to start
-        System.out.println("Nearest Neighbor Total Distance: " + totalDistance(tour, cities));
+        tour.add(tour.get(0));
         return tour;
     }
 
-    // Calculate total distance of a path
     public static double totalDistance(List<Integer> path, City[] cities) {
         double sum = 0;
         for (int i = 0; i < path.size() - 1; i++) {
@@ -120,7 +115,6 @@ public class Dsa2tsp {
         return sum;
     }
 
-    // Generate all permutations (for brute-force)
     public static List<List<Integer>> permutations(List<Integer> list) {
         List<List<Integer>> result = new ArrayList<>();
         permuteHelper(list, 0, result);
@@ -139,28 +133,35 @@ public class Dsa2tsp {
         }
     }
 
-    // Print the tour
-    public static void printTour(List<Integer> tour) {
-        System.out.print("Tour: ");
-        for (int city : tour) {
-            System.out.print(city + " ");
-        }
-        System.out.println();
+    public static void printTour(String method, List<Integer> tour, double distance, double timeMs) {
+        System.out.printf("%s Tour: %s\n", method, tour);
+        System.out.printf("%s Distance: %.2f | Time: %.3f ms\n\n", method, distance, timeMs);
     }
 
     public static void main(String[] args) {
-        int n = 8; // number of cities
+        int[] cityCounts = {5, 6, 7, 8, 10, 20};
 
-        City[] cities = generateCities(n);
-        printCitiesAndDistances(cities);
+        for (int n : cityCounts) {
+            System.out.println("========== " + n + " Cities ==========");
+            City[] cities = generateCities(n);
+            printCitiesAndDistances(cities);
 
-        List<Integer> bruteTour = tspBruteForce(cities);
-        printTour(bruteTour);
+            if (n <= 10) {
+                long start = System.nanoTime();
+                List<Integer> bruteTour = tspBruteForce(cities);
+                long end = System.nanoTime();
+                double time = (end - start) / 1_000_000.0;
+                double dist = totalDistance(bruteTour, cities);
+                printTour("Brute-force", bruteTour, dist, time);
+            }
 
-        System.out.println();
-
-        List<Integer> nnTour = tspNearestNeighbor(cities);
-        printTour(nnTour);
+            long startNN = System.nanoTime();
+            List<Integer> nnTour = tspNearestNeighbor(cities);
+            long endNN = System.nanoTime();
+            double timeNN = (endNN - startNN) / 1_000_000.0;
+            double distNN = totalDistance(nnTour, cities);
+            printTour("Nearest Neighbor", nnTour, distNN, timeNN);
+        }
     }
 }
 
