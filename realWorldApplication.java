@@ -15,7 +15,7 @@ public class realWorldApplication {
 
         // Welcome message
         System.out.println("\n=============================================");
-        System.out.println("  Welcome to the J&T Delivery Route Optimizer");
+        System.out.println("  Welcome to the J&T Delivery Route Maker");
         System.out.println("=============================================\n");
 
         // Step 1: Ask for number of delivery locations (excluding warehouse)
